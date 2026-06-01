@@ -1,25 +1,66 @@
 :root {
-  --color-primary: #0a3d62;
-  --color-primary-dark: #062840;
-  --color-primary-light: #c8e6f5;
-  --color-accent: #f0b429;
-  --color-accent-hover: #d9a01f;
-  --color-surface: #eef2f6;
+  /* Marca — azul acadêmico + dourado motivacional (vestibular / foco) */
+  --color-primary: #0c4a6e;
+  --color-primary-dark: #082f49;
+  --color-primary-mid: #0369a1;
+  --color-primary-light: #e0f2fe;
+  --color-primary-ghost: #f0f9ff;
+
+  --color-accent: #f59e0b;
+  --color-accent-hover: #d97706;
+  --color-accent-soft: #fffbeb;
+  --color-accent-muted: #fcd34d;
+
+  --color-surface: #f1f5f9;
+  --color-surface-alt: #e2e8f0;
   --color-card: #ffffff;
-  --color-text: #1a2b3c;
-  --color-text-muted: #5c6b7a;
-  --color-error: #c0392b;
-  --color-success: #1e8449;
-  --color-lesson-thumb: #b8e6c8;
-  --color-task-bg: #fff9e6;
+
+  --color-text: #0f172a;
+  --color-text-muted: #64748b;
+  --color-text-on-primary: #f8fafc;
+
+  --color-error: #dc2626;
+  --color-error-soft: #fef2f2;
+  --color-success: #059669;
+  --color-success-soft: #ecfdf5;
+
+  /* Disciplinas — distintas mas harmonizadas */
+  --color-subject-fisica: #2563eb;
+  --color-subject-matematica: #7c3aed;
+  --color-subject-quimica: #059669;
+  --color-subject-portugues: #ea580c;
+
+  --color-lesson-thumb: linear-gradient(135deg, #a7f3d0 0%, #6ee7b7 50%, #34d399 100%);
+  --color-task-bg: var(--color-accent-soft);
+  --color-goals-highlight: var(--color-accent);
+
+  --gradient-header: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-mid) 100%);
+  --gradient-auth-bg: linear-gradient(160deg, #e0f2fe 0%, #f1f5f9 45%, #fffbeb 100%);
+  --gradient-card-shine: linear-gradient(
+    105deg,
+    transparent 40%,
+    rgba(255, 255, 255, 0.35) 50%,
+    transparent 60%
+  );
+
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
-  --shadow-card: 0 4px 24px rgba(10, 61, 98, 0.08);
-  --font-sans: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --radius-xl: 20px;
+
+  --shadow-card: 0 4px 20px rgba(12, 74, 110, 0.07);
+  --shadow-card-hover: 0 12px 36px rgba(12, 74, 110, 0.14);
+  --shadow-nav: 0 -4px 24px rgba(15, 23, 42, 0.08);
+
+  --font-sans: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+
   --header-height: 56px;
-  --sidebar-width: 200px;
+  --sidebar-width: 210px;
+  --bottom-nav-height: 64px;
+
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
   --duration-page: 0.35s;
   --duration-hover: 0.2s;
+  --duration-progress: 0.6s;
 }

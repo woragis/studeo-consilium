@@ -1,5 +1,6 @@
 @import './styles/tokens.css';
 @import './styles/animations.css';
+@import './styles/mobile.css';
 
 *,
 *::before,
@@ -47,9 +48,10 @@ select {
 /* Auth */
 .auth-layout {
   min-height: 100vh;
+  min-height: 100dvh;
   display: grid;
   place-items: center;
-  background: #e8eef3;
+  background: var(--gradient-auth-bg);
   position: relative;
   overflow: hidden;
 }
@@ -269,8 +271,12 @@ select {
 }
 
 .form-banner--error {
-  background: #fdecea;
+  background: var(--color-error-soft);
   color: var(--color-error);
+}
+
+.auth-form--shake {
+  animation: field-shake 0.45s var(--ease-out);
 }
 
 /* App shell */
@@ -282,8 +288,8 @@ select {
 
 .app-header {
   height: var(--header-height);
-  background: var(--color-primary);
-  color: #fff;
+  background: var(--gradient-header);
+  color: var(--color-text-on-primary);
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
@@ -459,7 +465,22 @@ select {
   width: 100%;
   cursor: pointer;
   position: relative;
+  overflow: hidden;
   transition: transform var(--duration-hover), box-shadow var(--duration-hover);
+}
+
+.lesson-thumb::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--gradient-card-shine);
+  opacity: 0;
+  transition: opacity var(--duration-hover);
+  pointer-events: none;
+}
+
+.lesson-preview:hover .lesson-thumb::after {
+  opacity: 1;
 }
 
 .lesson-preview {
@@ -562,7 +583,7 @@ select {
 }
 
 .goals-remaining {
-  color: var(--color-accent);
+  color: var(--color-goals-highlight);
   font-weight: 600;
   margin: 1rem 0 0.5rem;
 }
@@ -816,8 +837,9 @@ select {
 
 .progress__fill {
   height: 100%;
-  background: var(--color-accent);
+  background: linear-gradient(90deg, var(--color-accent-muted), var(--color-accent));
   border-radius: 4px;
+  transition: width var(--duration-progress) var(--ease-out);
 }
 
 /* Lessons */
@@ -876,7 +898,7 @@ select {
 
 .clickable-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 32px rgba(10, 61, 98, 0.12);
+  box-shadow: var(--shadow-card-hover);
   text-decoration: none;
 }
 
@@ -1050,25 +1072,46 @@ select {
   background: var(--color-primary);
 }
 
+.audit-card--open {
+  border-left: 3px solid var(--color-accent);
+}
+
+.audit-card__trigger {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.75rem;
+  border: none;
+  background: none;
+  padding: 0;
+  font: inherit;
+  font-weight: 600;
+  color: var(--color-primary);
+  cursor: pointer;
+  text-align: left;
+}
+
+.audit-card__body {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--color-surface-alt);
+  color: var(--color-text-muted);
+}
+
+.level-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: var(--color-accent-soft);
+  color: var(--color-accent-hover);
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+}
+
 @media (max-width: 900px) {
-  :root {
-    --sidebar-width: 72px;
-  }
-
-  .app-sidebar__link span,
-  .app-sidebar__logout span {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-  }
-
-  .app-sidebar__link {
-    justify-content: center;
-    padding: 0.55rem;
-  }
-
   .home-page__grid,
   .studies-page__grid,
   .profile-page__grid {

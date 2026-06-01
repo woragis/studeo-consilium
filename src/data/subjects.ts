@@ -1,10 +1,10 @@
 import type { Subject } from '../types';
 
 export const subjects: Subject[] = [
-  { id: 'fisica', name: 'Física', color: '#4a90d9' },
-  { id: 'matematica', name: 'Matemática', color: '#6c5ce7' },
-  { id: 'quimica', name: 'Química', color: '#00b894' },
-  { id: 'portugues', name: 'Português', color: '#e17055' },
+  { id: 'fisica', name: 'Física', color: 'var(--color-subject-fisica)' },
+  { id: 'matematica', name: 'Matemática', color: 'var(--color-subject-matematica)' },
+  { id: 'quimica', name: 'Química', color: 'var(--color-subject-quimica)' },
+  { id: 'portugues', name: 'Português', color: 'var(--color-subject-portugues)' },
 ];
 
 export function getSubject(id: string) {
