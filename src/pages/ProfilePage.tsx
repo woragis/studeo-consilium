@@ -62,7 +62,9 @@ export function ProfilePage() {
           <h2>
             {profile.firstName} {profile.lastName}
           </h2>
-          <p>Nível {profile.level}</p>
+          <p>
+            <span className="level-badge">Nível {profile.level}</span>
+          </p>
           <ProgressBar value={xp.current} max={xp.max} label={`XP ${profile.xp}/${profile.level * 100}`} />
         </div>
       </header>

@@ -17,13 +17,22 @@ export function RegisterPage() {
   const [errors, setErrors] = useState<ReturnType<typeof validateRegister>>({});
   const [formError, setFormError] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [shake, setShake] = useState(false);
+
+  function triggerShake() {
+    setShake(true);
+    window.setTimeout(() => setShake(false), 500);
+  }
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     const nextErrors = validateRegister(firstName, lastName, email, password, confirmPassword);
     setErrors(nextErrors);
     setFormError('');
-    if (hasErrors(nextErrors)) return;
+    if (hasErrors(nextErrors)) {
+      triggerShake();
+      return;
+    }
 
     setSubmitting(true);
     try {
@@ -31,6 +40,7 @@ export function RegisterPage() {
       navigate('/', { replace: true });
     } catch (err) {
       setFormError(err instanceof Error ? err.message : 'Não foi possível criar a conta.');
+      triggerShake();
     } finally {
       setSubmitting(false);
     }
@@ -40,7 +50,11 @@ export function RegisterPage() {
     <div className="auth-card">
       <h1 className="auth-card__title">Criar conta</h1>
 
-      <form className="auth-form" onSubmit={handleSubmit} noValidate>
+      <form
+        className={`auth-form ${shake ? 'auth-form--shake' : ''}`}
+        onSubmit={handleSubmit}
+        noValidate
+      >
         <Input
           label="Nome"
           value={firstName}

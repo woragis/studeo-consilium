@@ -17,13 +17,22 @@ export function LoginPage() {
   const [errors, setErrors] = useState<ReturnType<typeof validateLogin>>({});
   const [formError, setFormError] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [shake, setShake] = useState(false);
+
+  function triggerShake() {
+    setShake(true);
+    window.setTimeout(() => setShake(false), 500);
+  }
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     const nextErrors = validateLogin(email, password);
     setErrors(nextErrors);
     setFormError('');
-    if (hasErrors(nextErrors)) return;
+    if (hasErrors(nextErrors)) {
+      triggerShake();
+      return;
+    }
 
     setSubmitting(true);
     try {
@@ -31,6 +40,7 @@ export function LoginPage() {
       navigate(from, { replace: true });
     } catch (err) {
       setFormError(err instanceof Error ? err.message : 'Não foi possível entrar.');
+      triggerShake();
     } finally {
       setSubmitting(false);
     }
@@ -46,7 +56,11 @@ export function LoginPage() {
       <h1 className="auth-card__brand">Studeo Consilium</h1>
       <p className="auth-card__subtitle">Entre para continuar seus estudos</p>
 
-      <form className="auth-form" onSubmit={handleSubmit} noValidate>
+      <form
+        className={`auth-form ${shake ? 'auth-form--shake' : ''}`}
+        onSubmit={handleSubmit}
+        noValidate
+      >
         <Input
           label="Email"
           name="email"

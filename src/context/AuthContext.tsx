@@ -18,6 +18,7 @@ import {
 } from '../lib/storage';
 import { clearSession, getSession, setSession } from '../lib/session';
 import { showToast } from '../lib/toast';
+import { levelFromXp } from '../lib/xp';
 import type { UserProfile, UserRecord } from '../types';
 
 interface AuthContextValue {
@@ -127,9 +128,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const updateProfile = useCallback(
     (patch: Partial<UserProfile>) => {
       if (!profile) return;
-      const next = { ...profile, ...patch };
+      const xp = patch.xp ?? profile.xp;
+      const level = levelFromXp(xp);
+      const prevLevel = profile.level;
+      const next = { ...profile, ...patch, xp, level };
       saveProfile(next);
       setProfile(next);
+      if (level > prevLevel) {
+        showToast(`Parabéns! Você alcançou o nível ${level}!`, 'success');
+      }
     },
     [profile],
   );
