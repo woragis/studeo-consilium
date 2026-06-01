@@ -1,21 +1,16 @@
 import {
   BookOpen,
-  Circle,
-  Diamond,
+  ClipboardList,
   HelpCircle,
   Home,
   LogOut,
   Play,
   Settings,
-  Square,
-  Star,
   Target,
-  CheckSquare,
-  Menu,
-  ClipboardList,
 } from 'lucide-react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { showToast } from '../lib/toast';
 
 const mainNav = [
   { to: '/', icon: Home, label: 'Início', end: true },
@@ -30,27 +25,18 @@ const secondaryNav = [
   { to: '/auditoria-ux', icon: ClipboardList, label: 'Auditoria UX' },
 ];
 
-/** Ícones decorativos do protótipo Figma (sem rota) */
-const decorative = [Star, Menu, Square, Diamond, Play, Circle, CheckSquare];
-
 export function AppSidebar() {
   const { logout } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogout = () => {
+  function handleLogout() {
     logout();
+    showToast('Você saiu da sua conta.', 'info');
     navigate('/login');
-  };
+  }
 
   return (
     <aside className="app-sidebar" aria-label="Navegação principal">
-      <div className="app-sidebar__decor" aria-hidden>
-        {decorative.map((Icon, i) => (
-          <span key={i} className="app-sidebar__decor-icon">
-            <Icon size={18} strokeWidth={1.5} />
-          </span>
-        ))}
-      </div>
       <nav className="app-sidebar__nav">
         {mainNav.map(({ to, icon: Icon, label, end }) => (
           <NavLink
@@ -60,10 +46,9 @@ export function AppSidebar() {
             className={({ isActive }) =>
               `app-sidebar__link ${isActive ? 'app-sidebar__link--active' : ''}`
             }
-            title={label}
           >
-            <Icon size={20} />
-            <span className="sr-only">{label}</span>
+            <Icon size={20} aria-hidden />
+            <span>{label}</span>
           </NavLink>
         ))}
         <div className="app-sidebar__divider" />
@@ -74,16 +59,15 @@ export function AppSidebar() {
             className={({ isActive }) =>
               `app-sidebar__link ${isActive ? 'app-sidebar__link--active' : ''}`
             }
-            title={label}
           >
-            <Icon size={20} />
-            <span className="sr-only">{label}</span>
+            <Icon size={20} aria-hidden />
+            <span>{label}</span>
           </NavLink>
         ))}
       </nav>
-      <button type="button" className="app-sidebar__logout" onClick={handleLogout} title="Sair">
-        <LogOut size={20} />
-        <span className="sr-only">Sair</span>
+      <button type="button" className="app-sidebar__logout" onClick={handleLogout}>
+        <LogOut size={20} aria-hidden />
+        <span>Sair</span>
       </button>
     </aside>
   );
