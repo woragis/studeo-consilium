@@ -1,7 +1,9 @@
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useState } from 'react';
+import { Link, useParams } from 'react-router-dom';
 import { getLessonBySlug } from '../data/lessons';
 import { getSubject } from '../data/subjects';
 import { Button } from '../components/ui/Button';
+import { LinkButton } from '../components/ui/LinkButton';
 import { Card } from '../components/ui/Card';
 import { ProgressBar } from '../components/ui/ProgressBar';
 import { useAuth } from '../context/AuthContext';
@@ -12,11 +14,11 @@ export function LessonDetailPage() {
   const { slug } = useParams<{ slug: string }>();
   const lesson = slug ? getLessonBySlug(slug) : undefined;
   const { profile, updateProfile } = useAuth();
-  const navigate = useNavigate();
+  const [openModule, setOpenModule] = useState(0);
 
   if (!lesson || !profile) {
     return (
-      <div className="page">
+      <div className="page page-transition">
         <p>Aula não encontrada.</p>
         <Link to="/aulas">Voltar ao catálogo</Link>
       </div>
@@ -64,12 +66,39 @@ export function LessonDetailPage() {
         <ProgressBar value={progress} label={`${progress}% concluído`} />
       </header>
 
-      <div className="lesson-detail__video lesson-thumb" aria-label="Área do vídeo" />
+      <button
+        type="button"
+        className="lesson-detail__video lesson-thumb"
+        onClick={() => bumpProgress(5)}
+        aria-label="Assistir trecho da aula e avançar progresso"
+      >
+        <span className="lesson-detail__play-badge">▶ Assistir</span>
+      </button>
 
       <div className="lesson-detail__modules">
         {lesson.modules.map((mod, i) => (
-          <Card key={i} title={`Módulo ${i + 1}: ${mod.title}`}>
-            <p>{mod.body}</p>
+          <Card key={i} className="module-card">
+            <button
+              type="button"
+              className="accordion__trigger module-card__trigger"
+              onClick={() => setOpenModule(openModule === i ? -1 : i)}
+              aria-expanded={openModule === i}
+            >
+              <span>
+                Módulo {i + 1}: {mod.title}
+              </span>
+              <span className={`accordion__chevron ${openModule === i ? 'accordion__chevron--open' : ''}`}>
+                ▾
+              </span>
+            </button>
+            {openModule === i && (
+              <div className="accordion__panel accordion__panel--open module-card__body">
+                <p>{mod.body}</p>
+                <Button variant="ghost" onClick={() => bumpProgress(5)}>
+                  Marcar módulo como lido (+5%)
+                </Button>
+              </div>
+            )}
           </Card>
         ))}
       </div>
@@ -79,12 +108,12 @@ export function LessonDetailPage() {
           Continuar (+10%)
         </Button>
         <Button onClick={() => bumpProgress(100 - progress)}>Marcar como concluída</Button>
-        <Button
-          variant="ghost"
-          onClick={() => navigate(`/estudos?subject=${lessonSubjectId}`)}
-        >
+        <LinkButton to={`/estudos?subject=${lessonSubjectId}`} variant="ghost">
           Iniciar cronômetro
-        </Button>
+        </LinkButton>
+        <LinkButton to="/aulas" variant="ghost">
+          Voltar ao catálogo
+        </LinkButton>
       </div>
     </div>
   );

@@ -1,12 +1,17 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getLessonById } from '../data/lessons';
-import { Button } from '../components/ui/Button';
+import { LinkButton } from '../components/ui/LinkButton';
 import { Card } from '../components/ui/Card';
 import { useAuth } from '../context/AuthContext';
+import { addXp, levelFromXp } from '../lib/xp';
+import { showToast } from '../lib/toast';
 import type { DailyGoalStatus } from '../types';
 
 export function HomePage() {
   const { profile, updateProfile } = useAuth();
+  const [popId, setPopId] = useState<string | null>(null);
+
   if (!profile) return null;
 
   const lesson = getLessonById(profile.lastRecommendedLessonId);
@@ -15,6 +20,10 @@ export function HomePage() {
 
   function toggleGoal(id: string) {
     if (!profile) return;
+    setPopId(id);
+    setTimeout(() => setPopId(null), 350);
+
+    let awardedXp = false;
     const dailyGoals = profile.dailyGoals.map((g) => {
       if (g.id !== id) return g;
       const nextStatus: DailyGoalStatus =
@@ -23,9 +32,23 @@ export function HomePage() {
           : g.status === 'em_andamento'
             ? 'concluida'
             : 'pendente';
+      if (nextStatus === 'concluida' && g.status !== 'concluida') {
+        awardedXp = true;
+      }
       return { ...g, status: nextStatus };
     });
-    updateProfile({ dailyGoals });
+
+    if (awardedXp) {
+      const xp = addXp(profile.xp, 5);
+      updateProfile({ dailyGoals, xp, level: levelFromXp(xp) });
+      showToast('Meta do dia concluída! +5 XP', 'success');
+    } else {
+      updateProfile({ dailyGoals });
+      const goal = dailyGoals.find((g) => g.id === id);
+      if (goal?.status === 'em_andamento') {
+        showToast('Meta em andamento — continue assim!', 'info');
+      }
+    }
   }
 
   return (
@@ -37,30 +60,34 @@ export function HomePage() {
 
       <div className="home-page__grid">
         <Card title="Aula recomendada" className="home-page__lesson">
-          <div className="lesson-thumb" aria-hidden />
-          {lesson && (
-            <>
+          {lesson ? (
+            <Link to={`/aulas/${lesson.slug}`} className="lesson-preview">
+              <div className="lesson-thumb" aria-hidden />
               <h3 className="lesson-thumb__title">{lesson.title}</h3>
-              <div className="lesson-thumb__actions">
-                <Link to={`/aulas/${lesson.slug}`}>
-                  <Button>Continuar aula</Button>
-                </Link>
-              </div>
-            </>
+              <span className="lesson-preview__cta">Continuar aula →</span>
+            </Link>
+          ) : (
+            <Link to="/aulas" className="text-link">
+              Explorar catálogo de aulas
+            </Link>
           )}
         </Card>
 
         <Card title="Metas de hoje" className="home-page__goals">
           <ul className="goal-list">
             {profile.dailyGoals.map((goal) => (
-              <li key={goal.id} className="goal-list__item">
+              <li key={goal.id} className="goal-list__item stagger-item">
                 <button
                   type="button"
-                  className={`goal-checkbox goal-checkbox--${goal.status}`}
+                  className={`goal-checkbox goal-checkbox--${goal.status} ${popId === goal.id ? 'goal-checkbox--pop' : ''}`}
                   onClick={() => toggleGoal(goal.id)}
-                  aria-label={`Meta: ${goal.title}`}
+                  aria-label={`Alternar meta: ${goal.title}`}
                 />
-                <div>
+                <button
+                  type="button"
+                  className="goal-list__content"
+                  onClick={() => toggleGoal(goal.id)}
+                >
                   <span>{goal.title}</span>
                   <small>
                     {goal.status === 'em_andamento'
@@ -69,7 +96,10 @@ export function HomePage() {
                         ? 'Concluída'
                         : 'Pendente'}
                   </small>
-                </div>
+                </button>
+                <Link to="/metas" className="goal-list__edit" title="Gerenciar metas">
+                  ⋯
+                </Link>
               </li>
             ))}
           </ul>
@@ -82,9 +112,14 @@ export function HomePage() {
         </Card>
       </div>
 
-      <p className="home-page__catalog">
-        <Link to="/aulas">Ver catálogo de aulas →</Link>
-      </p>
+      <div className="home-page__quick">
+        <LinkButton to="/aulas" variant="ghost">
+          Ver catálogo de aulas
+        </LinkButton>
+        <LinkButton to="/estudos" variant="ghost">
+          Abrir cronômetro
+        </LinkButton>
+      </div>
     </div>
   );
 }

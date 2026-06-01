@@ -1,8 +1,7 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
 import { lessons } from '../data/lessons';
 import { subjects } from '../data/subjects';
-import { Card } from '../components/ui/Card';
+import { ClickableCard } from '../components/ClickableCard';
 import { useAuth } from '../context/AuthContext';
 import type { SubjectId } from '../types';
 
@@ -17,14 +16,16 @@ export function LessonsCatalogPage() {
     <div className="page lessons-page">
       <header className="page__hero">
         <h2>Catálogo de aulas</h2>
-        <p>Conteúdo organizado por matéria — dados demonstrativos no app.</p>
+        <p>Conteúdo organizado por matéria — clique em um card para abrir a aula.</p>
       </header>
 
-      <div className="filter-chips" role="tablist">
+      <div className="filter-chips" role="tablist" aria-label="Filtrar por matéria">
         <button
           type="button"
           className={filter === 'all' ? 'filter-chips__active' : ''}
           onClick={() => setFilter('all')}
+          role="tab"
+          aria-selected={filter === 'all'}
         >
           Todas
         </button>
@@ -34,6 +35,8 @@ export function LessonsCatalogPage() {
             type="button"
             className={filter === s.id ? 'filter-chips__active' : ''}
             onClick={() => setFilter(s.id)}
+            role="tab"
+            aria-selected={filter === s.id}
           >
             {s.name}
           </button>
@@ -41,21 +44,28 @@ export function LessonsCatalogPage() {
       </div>
 
       <div className="lessons-grid">
-        {filtered.map((lesson) => {
+        {filtered.map((lesson, index) => {
           const subject = subjects.find((s) => s.id === lesson.subjectId);
           const progress = profile?.lessonProgress[lesson.id] ?? 0;
           return (
-            <Card key={lesson.id} className="lesson-card">
+            <ClickableCard
+              key={lesson.id}
+              to={`/aulas/${lesson.slug}`}
+              className="lesson-card stagger-item"
+              style={{ animationDelay: `${index * 0.04}s` }}
+            >
               <span className="lesson-card__subject" style={{ color: subject?.color }}>
                 {subject?.name}
               </span>
               <h3>{lesson.title}</h3>
               <p>{lesson.subtitle}</p>
-              <p className="lesson-card__meta">{lesson.durationMinutes} min · {progress}%</p>
-              <Link to={`/aulas/${lesson.slug}`} className="text-link">
-                Abrir aula →
-              </Link>
-            </Card>
+              <p className="lesson-card__meta">
+                {lesson.durationMinutes} min · {progress}% concluído
+              </p>
+              <span className="lesson-card__arrow" aria-hidden>
+                →
+              </span>
+            </ClickableCard>
           );
         })}
       </div>

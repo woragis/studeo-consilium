@@ -1,5 +1,7 @@
-import { useEffect, useState, type FormEvent } from 'react';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
+import { Link } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
+import { LinkButton } from '../components/ui/LinkButton';
 import { Card } from '../components/ui/Card';
 import { Input } from '../components/ui/Input';
 import { ProgressBar } from '../components/ui/ProgressBar';
@@ -9,9 +11,11 @@ import { showToast } from '../lib/toast';
 
 export function ProfilePage() {
   const { profile, updateProfile } = useAuth();
+  const formRef = useRef<HTMLFormElement>(null);
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [goal, setGoal] = useState('');
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (!profile) return;
@@ -27,20 +31,33 @@ export function ProfilePage() {
   const doneTasks = profile.tasks.filter((t) => t.done).length;
   const hours = Math.floor(profile.totalStudySeconds / 3600);
 
-  function handleSave(e: FormEvent) {
+  async function handleSave(e: FormEvent) {
     e.preventDefault();
     if (!profile) return;
+    setSaving(true);
+    await new Promise((r) => setTimeout(r, 400));
     const parts = fullName.trim().split(/\s+/);
     const firstName = parts[0] ?? profile.firstName;
     const lastName = parts.slice(1).join(' ') || profile.lastName;
     updateProfile({ firstName, lastName, email, goal });
+    setSaving(false);
     showToast('Alterações salvas com sucesso.', 'success');
+  }
+
+  function scrollToForm() {
+    formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    showToast('Edite seus dados abaixo.', 'info');
   }
 
   return (
     <div className="page profile-page">
       <header className="profile-hero">
-        <div className="profile-hero__avatar" aria-hidden />
+        <button
+          type="button"
+          className="profile-hero__avatar"
+          onClick={scrollToForm}
+          aria-label="Editar foto e dados"
+        />
         <div>
           <h2>
             {profile.firstName} {profile.lastName}
@@ -52,36 +69,45 @@ export function ProfilePage() {
 
       <div className="profile-page__grid">
         <Card title="Dados pessoais">
-          <form onSubmit={handleSave} className="profile-form">
+          <form ref={formRef} onSubmit={handleSave} className="profile-form">
             <Input label="Nome" value={fullName} onChange={(e) => setFullName(e.target.value)} />
             <Input label="Email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
             <Input label="Objetivo" value={goal} onChange={(e) => setGoal(e.target.value)} />
-            <Button type="submit">Salvar alterações</Button>
+            <Button type="submit" disabled={saving}>
+              {saving ? 'Salvando…' : 'Salvar alterações'}
+            </Button>
           </form>
         </Card>
 
         <Card title="Estatísticas">
-          <dl className="stats-list">
-            <div>
+          <dl className="stats-list stats-list--interactive">
+            <Link to="/estudos" className="stats-list__row">
               <dt>Horas estudadas</dt>
               <dd>{hours}</dd>
-            </div>
-            <div>
+            </Link>
+            <div className="stats-list__row">
               <dt>Sequência</dt>
               <dd>{profile.streakDays} dias</dd>
             </div>
-            <div>
+            <Link to="/estudos" className="stats-list__row">
               <dt>Tarefas a fazer</dt>
               <dd>{pendingTasks}</dd>
-            </div>
-            <div>
+            </Link>
+            <Link to="/estudos" className="stats-list__row">
               <dt>Concluídas</dt>
               <dd>{doneTasks}</dd>
-            </div>
+            </Link>
           </dl>
         </Card>
 
-        <Card title="Metas">
+        <Card
+          title="Metas"
+          action={
+            <Link to="/metas" className="text-link">
+              Editar
+            </Link>
+          }
+        >
           <ul className="chip-list">
             {profile.longTermGoals.map((g, i) => (
               <li key={i} className="chip">
@@ -89,6 +115,9 @@ export function ProfilePage() {
               </li>
             ))}
           </ul>
+          <LinkButton to="/metas" variant="ghost" className="profile-metas__cta">
+            Gerenciar todas as metas
+          </LinkButton>
         </Card>
       </div>
     </div>
