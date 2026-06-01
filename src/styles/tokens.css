@@ -18,5 +18,8 @@
   --shadow-card: 0 4px 24px rgba(10, 61, 98, 0.08);
   --font-sans: 'Segoe UI', system-ui, -apple-system, sans-serif;
   --header-height: 56px;
-  --sidebar-width: 72px;
+  --sidebar-width: 200px;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --duration-page: 0.35s;
+  --duration-hover: 0.2s;
 }

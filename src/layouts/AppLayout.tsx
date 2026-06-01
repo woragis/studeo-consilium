@@ -1,6 +1,7 @@
-import { Outlet, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { AppHeader } from '../components/AppHeader';
 import { AppSidebar } from '../components/AppSidebar';
+import { PageTransition } from '../components/PageTransition';
 
 const sectionTitles: Record<string, string> = {
   '/': 'Início',
@@ -28,7 +29,7 @@ export function AppLayout() {
       <div className="app-shell__body">
         <AppSidebar />
         <main className="app-shell__content">
-          <Outlet />
+          <PageTransition />
         </main>
       </div>
     </div>
