@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { ThemeToggle } from '../components/ThemeToggle';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { useAuth } from '../context/AuthContext';
@@ -100,6 +101,9 @@ export function RegisterPage() {
         </Button>
       </form>
 
+      <div className="auth-card__theme">
+        <ThemeToggle />
+      </div>
       <p className="auth-card__footer">
         Já possui cadastro? <Link to="/login">Login</Link>
       </p>

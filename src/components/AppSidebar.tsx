@@ -11,6 +11,7 @@ import {
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { showToast } from '../lib/toast';
+import { ThemeToggle } from './ThemeToggle';
 
 const mainNav = [
   { to: '/', icon: Home, label: 'Início', end: true },
@@ -65,6 +66,9 @@ export function AppSidebar() {
           </NavLink>
         ))}
       </nav>
+      <div className="app-sidebar__theme">
+        <ThemeToggle compact />
+      </div>
       <button type="button" className="app-sidebar__logout" onClick={handleLogout}>
         <LogOut size={20} aria-hidden />
         <span>Sair</span>

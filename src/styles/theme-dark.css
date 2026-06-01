@@ -1,0 +1,69 @@
+[data-theme='dark'] {
+  --color-primary: #7dd3fc;
+  --color-primary-dark: #0c4a6e;
+  --color-primary-mid: #38bdf8;
+  --color-primary-light: #164e63;
+  --color-primary-ghost: #0f172a;
+
+  --color-accent: #fbbf24;
+  --color-accent-hover: #f59e0b;
+  --color-accent-soft: #422006;
+  --color-accent-muted: #d97706;
+
+  --color-surface: #0f172a;
+  --color-surface-alt: #1e293b;
+  --color-card: #1e293b;
+
+  --color-text: #f1f5f9;
+  --color-text-muted: #94a3b8;
+  --color-text-on-primary: #f8fafc;
+
+  --color-error: #f87171;
+  --color-error-soft: #450a0a;
+  --color-success: #34d399;
+  --color-success-soft: #064e3b;
+
+  --color-subject-fisica: #60a5fa;
+  --color-subject-matematica: #a78bfa;
+  --color-subject-quimica: #34d399;
+  --color-subject-portugues: #fb923c;
+
+  --color-lesson-thumb: linear-gradient(135deg, #065f46 0%, #047857 50%, #10b981 100%);
+  --color-task-bg: #422006;
+
+  --gradient-header: linear-gradient(135deg, #082f49 0%, #0e7490 100%);
+  --gradient-auth-bg: linear-gradient(160deg, #0f172a 0%, #1e293b 50%, #422006 100%);
+  --gradient-card-shine: linear-gradient(
+    105deg,
+    transparent 40%,
+    rgba(255, 255, 255, 0.08) 50%,
+    transparent 60%
+  );
+
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.35);
+  --shadow-card-hover: 0 12px 36px rgba(0, 0, 0, 0.45);
+  --shadow-nav: 0 -4px 24px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme='dark'] .auth-card,
+[data-theme='dark'] .card {
+  border: 1px solid var(--color-surface-alt);
+}
+
+[data-theme='dark'] .field input,
+[data-theme='dark'] .field select {
+  background: var(--color-surface);
+  border-color: var(--color-surface-alt);
+  color: var(--color-text);
+}
+
+[data-theme='dark'] .filter-chips button {
+  background: var(--color-surface);
+  border-color: var(--color-surface-alt);
+  color: var(--color-text);
+}
+
+[data-theme='dark'] .filter-chips__active {
+  background: var(--color-primary-mid);
+  border-color: var(--color-primary-mid);
+}

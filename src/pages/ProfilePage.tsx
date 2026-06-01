@@ -4,6 +4,7 @@ import { Button } from '../components/ui/Button';
 import { LinkButton } from '../components/ui/LinkButton';
 import { Card } from '../components/ui/Card';
 import { Input } from '../components/ui/Input';
+import { ThemeToggle } from '../components/ThemeToggle';
 import { ProgressBar } from '../components/ui/ProgressBar';
 import { useAuth } from '../context/AuthContext';
 import { xpProgressInLevel } from '../lib/xp';
@@ -120,6 +121,10 @@ export function ProfilePage() {
           <LinkButton to="/metas" variant="ghost" className="profile-metas__cta">
             Gerenciar todas as metas
           </LinkButton>
+        </Card>
+
+        <Card title="Aparência" className="profile-page__appearance">
+          <ThemeToggle />
         </Card>
       </div>
     </div>
