@@ -17,6 +17,7 @@ import {
   saveProfile,
 } from '../lib/storage';
 import { clearSession, getSession, setSession } from '../lib/session';
+import { emitLevelUp } from '../lib/level-up';
 import { showToast } from '../lib/toast';
 import { levelFromXp } from '../lib/xp';
 import type { UserProfile, UserRecord } from '../types';
@@ -135,7 +136,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       saveProfile(next);
       setProfile(next);
       if (level > prevLevel) {
-        showToast(`Parabéns! Você alcançou o nível ${level}!`, 'success');
+        emitLevelUp(level);
       }
     },
     [profile],
