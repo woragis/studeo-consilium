@@ -23,7 +23,7 @@ Referência para apresentação e testes de usabilidade. Todos os elementos list
 | STUDEO CONSILIUM | `/` |
 | Perfil (canto direito) | `/perfil` |
 
-## Sidebar
+## Sidebar (desktop)
 
 | Item | Rota |
 |------|------|
@@ -34,7 +34,15 @@ Referência para apresentação e testes de usabilidade. Todos os elementos list
 | Perfil | `/perfil` |
 | Ajuda | `/ajuda` |
 | Auditoria UX | `/auditoria-ux` |
+| Aparência | Toggle claro / escuro / sistema |
 | Sair | Logout + `/login` + toast |
+
+## Mobile — barra inferior
+
+| Item | Ação |
+|------|------|
+| Início · Aulas · Estudos · Perfil | Rotas diretas |
+| **Mais** | Abre sheet: Metas, Ajuda, Auditoria UX, Aparência, Sair |
 
 ## Início
 
