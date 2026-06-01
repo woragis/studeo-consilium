@@ -1,0 +1,22 @@
+:root {
+  --color-primary: #0a3d62;
+  --color-primary-dark: #062840;
+  --color-primary-light: #c8e6f5;
+  --color-accent: #f0b429;
+  --color-accent-hover: #d9a01f;
+  --color-surface: #eef2f6;
+  --color-card: #ffffff;
+  --color-text: #1a2b3c;
+  --color-text-muted: #5c6b7a;
+  --color-error: #c0392b;
+  --color-success: #1e8449;
+  --color-lesson-thumb: #b8e6c8;
+  --color-task-bg: #fff9e6;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --shadow-card: 0 4px 24px rgba(10, 61, 98, 0.08);
+  --font-sans: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --header-height: 56px;
+  --sidebar-width: 72px;
+}
