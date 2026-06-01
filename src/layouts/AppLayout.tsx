@@ -1,6 +1,7 @@
 import { useLocation } from 'react-router-dom';
 import { AppHeader } from '../components/AppHeader';
 import { AppSidebar } from '../components/AppSidebar';
+import { MobileNav } from '../components/MobileNav';
 import { PageTransition } from '../components/PageTransition';
 
 const sectionTitles: Record<string, string> = {
@@ -32,6 +33,7 @@ export function AppLayout() {
           <PageTransition />
         </main>
       </div>
+      <MobileNav />
     </div>
   );
 }
