@@ -1,75 +1,60 @@
-# React + TypeScript + Vite
+# Studeo Consilium
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+App web de organização de estudos para vestibular — projeto acadêmico de **UX e Usabilidade Web**.
 
-Currently, two official plugins are available:
+Protótipo visual: `../design-prototipo/`  
+Planos: `plano-projeto-studeo-consilium.md` e `plano-implementacao-react.md`
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Stack
 
-## React Compiler
+- React 19 + Vite + TypeScript
+- React Router
+- Persistência: `localStorage` (usuários, perfil, progresso) + `sessionStorage`/cookie (sessão)
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+## Como rodar
 
-Note: This will impact Vite dev & build performances.
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Abra o endereço exibido no terminal (geralmente `http://localhost:5173`).
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Conta demonstração
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+| Campo | Valor |
+|-------|--------|
+| E-mail | `carlos@email.com` |
+| Senha | `senha12345` |
+
+Ou use o botão **Entrar com conta demo** na tela de login.
+
+## Roteiro de demo (5 min)
+
+1. Login com conta demo → **Início**
+2. **Continuar aula** → detalhe → avançar progresso
+3. **Iniciar cronômetro** → Estudos → pausar/finalizar (+XP)
+4. **Nova tarefa** → marcar concluída
+5. **Perfil** → salvar objetivo
+6. **Auditoria UX** → heurísticas de Nielsen
+
+## Scripts
+
+| Comando | Descrição |
+|---------|-----------|
+| `npm run dev` | Servidor de desenvolvimento |
+| `npm run build` | Build de produção |
+| `npm run preview` | Preview do build |
+
+## Estrutura
+
 ```
+src/
+  data/       # aulas, matérias, heurísticas (mock)
+  lib/        # storage, sessão, validação, XP
+  context/    # auth e cronômetro
+  pages/      # telas da aplicação
+  components/ # UI reutilizável
+```
+
+> Senhas em texto no `localStorage` são apenas para protótipo educacional.
