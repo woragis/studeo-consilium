@@ -52,7 +52,7 @@
   --shadow-card-hover: 0 12px 36px rgba(12, 74, 110, 0.14);
   --shadow-nav: 0 -4px 24px rgba(15, 23, 42, 0.08);
 
-  --font-sans: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
 
   --header-height: 56px;
   --sidebar-width: 210px;
