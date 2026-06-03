@@ -18,6 +18,12 @@ export interface DailyGoal {
   status: DailyGoalStatus;
 }
 
+export interface LongTermGoal {
+  id: string;
+  title: string;
+  status: DailyGoalStatus;
+}
+
 export interface Task {
   id: string;
   title: string;
@@ -33,6 +39,22 @@ export interface StudySession {
   endedAt?: string;
 }
 
+export type StudyTimerType = 'materia' | 'tarefa' | 'rotina' | 'meta';
+
+/** Cronômetro configurável com tempo acumulado persistente */
+export interface StudyTimerPreset {
+  id: string;
+  name: string;
+  type: StudyTimerType;
+  subjectId?: SubjectId;
+  taskId?: string;
+  dailyGoalId?: string;
+  /** Tempo em andamento (persiste ao pausar) */
+  elapsedSeconds: number;
+  /** Tempo total já finalizado neste cronômetro */
+  totalSeconds: number;
+}
+
 export interface UserProfile {
   userId: string;
   firstName: string;
@@ -43,14 +65,32 @@ export interface UserProfile {
   level: number;
   streakDays: number;
   totalStudySeconds: number;
-  lessonProgress: Record<string, number>;
+  /** Módulos concluídos — chave: `lessonId:moduleIndex` */
+  moduleProgress: Record<string, boolean>;
   dailyGoals: DailyGoal[];
-  longTermGoals: string[];
+  longTermGoals: LongTermGoal[];
   tasks: Task[];
   studySessions: StudySession[];
+  studyTimers: StudyTimerPreset[];
+  /** Registro cronológico de módulos/aulas concluídos */
+  lessonHistory: LessonHistoryEntry[];
   lastRecommendedLessonId: string;
 }
 
+export interface LessonHistoryEntry {
+  id: string;
+  lessonId: string;
+  moduleIndex: number;
+  completedAt: string;
+}
+
+export interface TimerRuntimeState {
+  activeTimerId: string | null;
+  running: boolean;
+  startedAt: number | null;
+}
+
+/** @deprecated legado — migrado para TimerRuntimeState */
 export interface TimerState {
   subjectId: SubjectId;
   elapsedSeconds: number;

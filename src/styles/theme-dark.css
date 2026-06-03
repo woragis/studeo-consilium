@@ -15,8 +15,12 @@
   --color-card: #1e293b;
 
   --color-text: #f1f5f9;
-  --color-text-muted: #94a3b8;
+  --color-text-muted: #cbd5e1;
   --color-text-on-primary: #f8fafc;
+
+  --color-button-primary: #0369a1;
+  --color-button-primary-hover: #0c4a6e;
+  --color-button-primary-text: #f8fafc;
 
   --color-error: #f87171;
   --color-error-soft: #450a0a;

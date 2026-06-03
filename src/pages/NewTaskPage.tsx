@@ -5,6 +5,11 @@ import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
 import { Input } from '../components/ui/Input';
 import { useAuth } from '../context/AuthContext';
+import {
+  duplicateBlockedMessage,
+  findDuplicateKind,
+  taskDuplicatePools,
+} from '../lib/strings';
 import type { SubjectId, TaskPriority } from '../types';
 import { showToast } from '../lib/toast';
 
@@ -20,6 +25,13 @@ export function NewTaskPage() {
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
     if (!profile || !title.trim()) return;
+
+    const duplicate = findDuplicateKind(title, taskDuplicatePools(profile));
+    if (duplicate) {
+      showToast(duplicateBlockedMessage(title, duplicate, 'tarefa'), 'error');
+      return;
+    }
+
     const task = {
       id: crypto.randomUUID(),
       title: title.trim(),
@@ -28,7 +40,7 @@ export function NewTaskPage() {
       subjectId: subjectId || undefined,
     };
     updateProfile({ tasks: [...profile.tasks, task] });
-    showToast('Tarefa criada.', 'success');
+    showToast('Tarefa criada com sucesso.', 'success');
     navigate('/estudos');
   }
 

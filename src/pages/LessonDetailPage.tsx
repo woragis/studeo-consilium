@@ -1,119 +1,251 @@
-import { useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
-import { getLessonBySlug } from '../data/lessons';
+import { useEffect, useRef, useState } from 'react';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { getLessonBySlug, isSubjectId, lessonPath } from '../data/lessons';
 import { getSubject } from '../data/subjects';
+import { LessonTrailSidebar } from '../components/LessonTrailSidebar';
+import { StudyTimerBar } from '../components/StudyTimerBar';
 import { Button } from '../components/ui/Button';
-import { LinkButton } from '../components/ui/LinkButton';
-import { Card } from '../components/ui/Card';
 import { ProgressBar } from '../components/ui/ProgressBar';
 import { useAuth } from '../context/AuthContext';
+import { createHistoryEntry } from '../lib/lesson-history';
+import {
+  countCompletedModules,
+  getFirstIncompleteModuleIndex,
+  getLessonPercent,
+  getNextLessonInSubject,
+  isModuleComplete,
+  moduleKey,
+} from '../lib/lesson-progress';
+import { showToast, showUndoToast } from '../lib/toast';
 import { addXp, levelFromXp } from '../lib/xp';
-import { showToast } from '../lib/toast';
+import type { SubjectId } from '../types';
+
+const UNDO_MS = 5000;
 
 export function LessonDetailPage() {
-  const { slug } = useParams<{ slug: string }>();
-  const lesson = slug ? getLessonBySlug(slug) : undefined;
+  const { subjectId: subjectParam, slug } = useParams<{ subjectId: string; slug: string }>();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
   const { profile, updateProfile } = useAuth();
-  const [openModule, setOpenModule] = useState(0);
+  const [watching, setWatching] = useState(false);
+  const advanceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  if (!lesson || !profile) {
+  const lesson = slug ? getLessonBySlug(slug) : undefined;
+  const subjectId =
+    subjectParam && isSubjectId(subjectParam) ? subjectParam : lesson?.subjectId;
+
+  if (!lesson || !profile || !subjectId || lesson.subjectId !== subjectId) {
     return (
-      <div className="page page-transition">
-        <p>Aula não encontrada.</p>
-        <Link to="/aulas">Voltar ao catálogo</Link>
+      <div className="page">
+        <p>Assunto não encontrado.</p>
+        <Link to="/aulas">Voltar às matérias</Link>
       </div>
     );
   }
 
-  const subject = getSubject(lesson.subjectId);
-  const lessonId = lesson.id;
-  const lessonSubjectId = lesson.subjectId;
-  const progress = profile.lessonProgress[lessonId] ?? 0;
+  const currentLesson = lesson;
+  const currentProfile = profile;
+  const currentSubjectId = subjectId as SubjectId;
 
-  function bumpProgress(amount: number) {
-    if (!profile) return;
-    const next = Math.min(100, progress + amount);
-    const lessonProgress = { ...profile.lessonProgress, [lessonId]: next };
-    let xp = profile.xp;
-    if (next === 100 && progress < 100) {
-      xp = addXp(xp, 25);
-      showToast('Aula concluída! +25 XP', 'success');
-    } else {
-      showToast(`Progresso atualizado: ${next}%`, 'info');
+  const subject = getSubject(currentSubjectId);
+  const moduleProgress = currentProfile.moduleProgress;
+  const moduleIndex = Math.min(
+    Math.max(0, Number(searchParams.get('m') ?? getFirstIncompleteModuleIndex(currentLesson, moduleProgress))),
+    currentLesson.modules.length - 1,
+  );
+  const mod = currentLesson.modules[moduleIndex];
+  const progress = getLessonPercent(currentLesson, moduleProgress);
+  const moduleDone = isModuleComplete(moduleProgress, currentLesson.id, moduleIndex);
+  const nextLesson = getNextLessonInSubject(currentLesson, moduleProgress);
+
+  useEffect(() => {
+    setWatching(false);
+  }, [moduleIndex, currentLesson.id]);
+
+  useEffect(() => {
+    return () => {
+      if (advanceTimerRef.current) clearTimeout(advanceTimerRef.current);
+    };
+  }, []);
+
+  function clearAdvanceTimer() {
+    if (advanceTimerRef.current) {
+      clearTimeout(advanceTimerRef.current);
+      advanceTimerRef.current = null;
     }
-    updateProfile({
-      lessonProgress,
-      xp,
-      level: levelFromXp(xp),
-      lastRecommendedLessonId: lessonId,
-    });
   }
 
+  function advanceAfterComplete(
+    justFinishedLesson: boolean,
+    nextModuleProgress: Record<string, boolean>,
+  ) {
+    if (!justFinishedLesson) {
+      setSearchParams({ m: String(moduleIndex + 1) });
+      return;
+    }
+    if (nextLesson) {
+      navigate(`${lessonPath(nextLesson)}?m=${getFirstIncompleteModuleIndex(nextLesson, nextModuleProgress)}`);
+      return;
+    }
+    showToast('Você concluiu todos os assuntos desta matéria!', 'info');
+  }
+
+  function requestCompleteModule() {
+    if (moduleDone) {
+      goNext();
+      return;
+    }
+
+    if (!watching) {
+      showToast('Clique em Assistir antes de concluir a aula.', 'info');
+      return;
+    }
+
+    clearAdvanceTimer();
+
+    const key = moduleKey(currentLesson.id, moduleIndex);
+    const prevModuleProgress = moduleProgress;
+    const prevXp = currentProfile.xp;
+    const prevLevel = currentProfile.level;
+    const completedBefore = countCompletedModules(currentLesson, moduleProgress);
+    const completedAfter = completedBefore + 1;
+    const justFinishedLesson = completedAfter >= currentLesson.modules.length;
+
+    const nextModuleProgress = { ...moduleProgress, [key]: true };
+    let xp = prevXp;
+    if (justFinishedLesson) {
+      xp = addXp(xp, 25);
+    }
+
+    const prevHistory = currentProfile.lessonHistory ?? [];
+    const historyEntry = createHistoryEntry(currentLesson.id, moduleIndex);
+
+    updateProfile({
+      moduleProgress: nextModuleProgress,
+      xp,
+      level: levelFromXp(xp),
+      lastRecommendedLessonId: currentLesson.id,
+      lessonHistory: [...prevHistory, historyEntry],
+    });
+
+    setWatching(false);
+
+    const undoMessage = justFinishedLesson
+      ? 'Assunto concluído. Você pode desfazer.'
+      : 'Aula concluída. Você pode desfazer.';
+
+    showUndoToast(undoMessage, () => {
+      clearAdvanceTimer();
+      updateProfile({
+        moduleProgress: prevModuleProgress,
+        xp: prevXp,
+        level: prevLevel,
+        lastRecommendedLessonId: currentProfile.lastRecommendedLessonId,
+        lessonHistory: prevHistory,
+      });
+      setWatching(true);
+      showToast('Conclusão desfeita.', 'info');
+    }, UNDO_MS);
+
+    advanceTimerRef.current = setTimeout(() => {
+      advanceTimerRef.current = null;
+      advanceAfterComplete(justFinishedLesson, nextModuleProgress);
+    }, UNDO_MS);
+  }
+
+  function goNext() {
+    if (moduleIndex < currentLesson.modules.length - 1) {
+      setSearchParams({ m: String(moduleIndex + 1) });
+      return;
+    }
+    if (nextLesson) {
+      navigate(`${lessonPath(nextLesson)}?m=${getFirstIncompleteModuleIndex(nextLesson, moduleProgress)}`);
+      return;
+    }
+    showToast('Você concluiu todos os assuntos desta matéria!', 'info');
+  }
+
+  function goPrev() {
+    if (moduleIndex > 0) {
+      setSearchParams({ m: String(moduleIndex - 1) });
+    }
+  }
+
+  const nextLabel =
+    moduleIndex < currentLesson.modules.length - 1
+      ? 'Próximo módulo'
+      : nextLesson
+        ? 'Próximo assunto'
+        : 'Fim da trilha';
+
+  const completeLabel =
+    moduleIndex < currentLesson.modules.length - 1
+      ? 'Concluir aula'
+      : 'Concluir assunto';
+
   return (
-    <div className="page lesson-detail">
-      <nav className="breadcrumb">
-        <Link to="/">Início</Link>
-        <span>/</span>
-        <Link to="/aulas">Aulas</Link>
-        <span>/</span>
-        <span>{lesson.title}</span>
-      </nav>
+    <div className="page lesson-detail lesson-detail--with-trail">
+      <div className="lesson-detail__layout">
+        <LessonTrailSidebar
+          subjectId={currentSubjectId}
+          currentLesson={currentLesson}
+          currentModuleIndex={moduleIndex}
+          moduleProgress={moduleProgress}
+        />
 
-      <header className="lesson-detail__header">
-        <span style={{ color: subject?.color }}>{subject?.name}</span>
-        <h2>{lesson.title}</h2>
-        <p>{lesson.subtitle}</p>
-        <ProgressBar value={progress} label={`${progress}% concluído`} />
-      </header>
+        <div className="lesson-detail__main">
+          <nav className="breadcrumb breadcrumb--compact">
+            <Link to="/aulas">Aulas</Link>
+            <span>/</span>
+            <Link to={`/aulas/${currentSubjectId}`}>{subject?.name}</Link>
+            <span>/</span>
+            <span>{currentLesson.title}</span>
+          </nav>
 
-      <button
-        type="button"
-        className="lesson-detail__video lesson-thumb"
-        onClick={() => bumpProgress(5)}
-        aria-label="Assistir trecho da aula e avançar progresso"
-      >
-        <span className="lesson-detail__play-badge">▶ Assistir</span>
-      </button>
+          <StudyTimerBar suggestedSubjectId={currentSubjectId} compact />
 
-      <div className="lesson-detail__modules">
-        {lesson.modules.map((mod, i) => (
-          <Card key={i} className="module-card">
-            <button
-              type="button"
-              className="accordion__trigger module-card__trigger"
-              onClick={() => setOpenModule(openModule === i ? -1 : i)}
-              aria-expanded={openModule === i}
-            >
-              <span>
-                Módulo {i + 1}: {mod.title}
-              </span>
-              <span className={`accordion__chevron ${openModule === i ? 'accordion__chevron--open' : ''}`}>
-                ▾
-              </span>
-            </button>
-            {openModule === i && (
-              <div className="accordion__panel accordion__panel--open module-card__body">
-                <p>{mod.body}</p>
-                <Button variant="ghost" onClick={() => bumpProgress(5)}>
-                  Marcar módulo como lido (+5%)
-                </Button>
-              </div>
+          <header className="lesson-detail__header">
+            <span className="lesson-detail__module-tag">
+              Módulo {moduleIndex + 1} de {currentLesson.modules.length}
+            </span>
+            <h2>{mod.title}</h2>
+            <p className="lesson-detail__topic-ref">{currentLesson.title}</p>
+            <ProgressBar value={progress} label={`${progress}% do assunto`} />
+          </header>
+
+          <button
+            type="button"
+            className={`lesson-detail__video lesson-thumb ${watching ? 'lesson-detail__video--watching' : ''}`.trim()}
+            onClick={() => setWatching(true)}
+            aria-label={watching ? 'Aula em andamento' : 'Assistir aula'}
+            aria-pressed={watching}
+          >
+            <span className="lesson-detail__play-badge">
+              {watching ? '● Assistindo' : '▶ Assistir'}
+            </span>
+          </button>
+
+          <div className="lesson-detail__content card">
+            <p>{mod.body}</p>
+          </div>
+
+          <div className="lesson-detail__actions">
+            <Button variant="ghost" onClick={goPrev} disabled={moduleIndex === 0}>
+              Módulo anterior
+            </Button>
+            {!moduleDone && (
+              <Button
+                variant="accent"
+                onClick={requestCompleteModule}
+                disabled={!watching}
+                title={watching ? undefined : 'Inicie a aula clicando em Assistir'}
+              >
+                {completeLabel}
+              </Button>
             )}
-          </Card>
-        ))}
-      </div>
-
-      <div className="lesson-detail__actions">
-        <Button variant="accent" onClick={() => bumpProgress(10)}>
-          Continuar (+10%)
-        </Button>
-        <Button onClick={() => bumpProgress(100 - progress)}>Marcar como concluída</Button>
-        <LinkButton to={`/estudos?subject=${lessonSubjectId}`} variant="ghost">
-          Iniciar cronômetro
-        </LinkButton>
-        <LinkButton to="/aulas" variant="ghost">
-          Voltar ao catálogo
-        </LinkButton>
+            <Button onClick={goNext}>{nextLabel} →</Button>
+          </div>
+        </div>
       </div>
     </div>
   );

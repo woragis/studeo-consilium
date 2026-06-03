@@ -11,7 +11,7 @@ const faq = [
   },
   {
     q: 'Como uso o cronômetro?',
-    a: 'Em Estudos, escolha a matéria na lista — o timer inicia automaticamente. Pause ou finalize quando terminar.',
+    a: 'Em Estudos, crie ou selecione um cronômetro (matéria, tarefa, rotina ou meta). O tempo em andamento fica salvo ao pausar. Nas aulas, escolha qual cronômetro usar no seletor.',
     link: '/estudos',
     linkLabel: 'Abrir estudos',
   },
@@ -20,12 +20,6 @@ const faq = [
     a: 'Finalize sessões (+10 XP), conclua aulas (+25 XP), metas do dia (+5 XP) e tarefas (+5 XP).',
     link: '/perfil',
     linkLabel: 'Ver meu progresso',
-  },
-  {
-    q: 'Onde vejo as heurísticas de UX?',
-    a: 'As 10 heurísticas oficiais de Nielsen estão na tela Auditoria UX, com telas e evidências do protótipo.',
-    link: '/auditoria-ux',
-    linkLabel: 'Abrir auditoria',
   },
 ];
 

@@ -1,14 +1,14 @@
-import { ClipboardList, HelpCircle, LogOut, Target, X } from 'lucide-react';
+import { HelpCircle, LogOut, Target, X } from 'lucide-react';
 import { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { showToast } from '../lib/toast';
+import { PresentationAuditLink } from './PresentationAuditLink';
 import { ThemeToggle } from './ThemeToggle';
 
 const links = [
   { to: '/metas', icon: Target, label: 'Metas' },
   { to: '/ajuda', icon: HelpCircle, label: 'Ajuda' },
-  { to: '/auditoria-ux', icon: ClipboardList, label: 'Auditoria UX' },
 ];
 
 interface MobileMoreSheetProps {
@@ -62,6 +62,7 @@ export function MobileMoreSheet({ open, onClose }: MobileMoreSheetProps) {
         </nav>
         <div className="more-sheet__theme">
           <ThemeToggle />
+          <PresentationAuditLink onNavigate={onClose} />
         </div>
         <button type="button" className="more-sheet__logout" onClick={handleLogout}>
           <LogOut size={20} aria-hidden />

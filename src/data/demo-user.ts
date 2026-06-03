@@ -21,8 +21,20 @@ export function createDemoProfile(): UserProfile {
     level: 2,
     streakDays: 7,
     totalStudySeconds: 46 * 3600,
-    lessonProgress: {
-      'lesson-newton': 35,
+    moduleProgress: {
+      'lesson-newton:0': true,
+      'lesson-cinematica:0': true,
+      'lesson-cinematica:1': true,
+      'lesson-funcoes:0': true,
+      'lesson-progressoes:0': true,
+      'lesson-tabela:0': true,
+      'lesson-interpretacao:0': true,
+      'lesson-interpretacao:1': true,
+      'lesson-energia:0': true,
+      'lesson-energia:1': true,
+      'lesson-trigonometria:0': true,
+      'lesson-estequiometria:0': true,
+      'lesson-redacao:0': true,
     },
     lastRecommendedLessonId: 'lesson-newton',
     dailyGoals: [
@@ -43,10 +55,10 @@ export function createDemoProfile(): UserProfile {
       },
     ],
     longTermGoals: [
-      '4h de estudo diário',
-      '1 simulado por semana',
-      '80% no simulado',
-      '960 na redação',
+      { id: 'ltg-1', title: '4h de estudo diário', status: 'em_andamento' },
+      { id: 'ltg-2', title: '1 simulado por semana', status: 'pendente' },
+      { id: 'ltg-3', title: '80% no simulado', status: 'pendente' },
+      { id: 'ltg-4', title: '960 na redação', status: 'concluida' },
     ],
     tasks: [
       {
@@ -77,6 +89,66 @@ export function createDemoProfile(): UserProfile {
       { id: 's-3', subjectId: 'matematica', elapsedSeconds: 70 * 60 },
       { id: 's-4', subjectId: 'quimica', elapsedSeconds: 40 * 60 },
     ],
+    studyTimers: [
+      {
+        id: 'timer-fisica',
+        name: 'Física',
+        type: 'materia',
+        subjectId: 'fisica',
+        elapsedSeconds: 12 * 60 + 30,
+        totalSeconds: 25 * 60 + 18,
+      },
+      {
+        id: 'timer-matematica',
+        name: 'Matemática',
+        type: 'materia',
+        subjectId: 'matematica',
+        elapsedSeconds: 0,
+        totalSeconds: 70 * 60,
+      },
+      {
+        id: 'timer-quimica',
+        name: 'Química',
+        type: 'materia',
+        subjectId: 'quimica',
+        elapsedSeconds: 5 * 60,
+        totalSeconds: 40 * 60,
+      },
+      {
+        id: 'timer-portugues',
+        name: 'Português',
+        type: 'materia',
+        subjectId: 'portugues',
+        elapsedSeconds: 0,
+        totalSeconds: 35 * 60,
+      },
+      {
+        id: 'timer-tarefa-fisica',
+        name: 'Estudar Física',
+        type: 'tarefa',
+        taskId: 't-1',
+        subjectId: 'fisica',
+        elapsedSeconds: 0,
+        totalSeconds: 0,
+      },
+      {
+        id: 'timer-rotina',
+        name: 'Revisão vespertina',
+        type: 'rotina',
+        elapsedSeconds: 18 * 60,
+        totalSeconds: 2 * 3600,
+      },
+      {
+        id: 'timer-meta',
+        name: 'Resolver 15 questões de matemática',
+        type: 'meta',
+        dailyGoalId: 'dg-1',
+        subjectId: 'matematica',
+        elapsedSeconds: 0,
+        totalSeconds: 45 * 60,
+      },
+    ],
+    lessonHistory: [],
   };
 }
 
@@ -94,7 +166,7 @@ export function createEmptyProfile(
     level: 1,
     streakDays: 0,
     totalStudySeconds: 0,
-    lessonProgress: {},
+    moduleProgress: {},
     lastRecommendedLessonId: 'lesson-newton',
     dailyGoals: [
       {
@@ -103,9 +175,13 @@ export function createEmptyProfile(
         status: 'pendente',
       },
     ],
-    longTermGoals: ['4h de estudo diário'],
+    longTermGoals: [
+      { id: crypto.randomUUID(), title: '4h de estudo diário', status: 'pendente' },
+    ],
     tasks: [],
     studySessions: [],
+    studyTimers: [],
+    lessonHistory: [],
     ...overrides,
   };
 }

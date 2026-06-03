@@ -1,10 +1,9 @@
-import {
-  createDemoProfile,
-  createEmptyProfile,
-  demoUserRecord,
-  DEMO_USER_ID,
-} from '../data/demo-user';
-import type { TimerState, UserProfile, UserRecord } from '../types';
+import { createDemoProfile, createEmptyProfile, demoUserRecord, DEMO_USER_ID } from '../data/demo-user';
+import { normalizeModuleProgress } from './lesson-progress';
+import { normalizeLessonHistory } from './lesson-history';
+import { normalizeLongTermGoals } from './long-term-goals';
+import { normalizeStudyTimers } from './study-timers';
+import type { TimerRuntimeState, TimerState, UserProfile, UserRecord } from '../types';
 
 const USERS_KEY = 'studeo:users';
 
@@ -20,6 +19,15 @@ function readJson<T>(key: string, fallback: T): T {
 
 function writeJson(key: string, value: unknown) {
   localStorage.setItem(key, JSON.stringify(value));
+}
+
+function normalizeProfile(profile: UserProfile): UserProfile {
+  const moduleProgress = normalizeModuleProgress(profile as UserProfile & { lessonProgress?: Record<string, number> });
+  const { lessonProgress: _legacy, ...rest } = profile as UserProfile & { lessonProgress?: Record<string, number> };
+  const studyTimers = normalizeStudyTimers(rest);
+  const lessonHistory = normalizeLessonHistory(rest);
+  const longTermGoals = normalizeLongTermGoals(rest);
+  return { ...rest, moduleProgress, studyTimers, lessonHistory, longTermGoals };
 }
 
 export function getUsers(): UserRecord[] {
@@ -53,27 +61,57 @@ export function profileKey(userId: string) {
 }
 
 export function getProfile(userId: string): UserProfile | null {
-  return readJson<UserProfile | null>(profileKey(userId), null);
+  const raw = readJson<UserProfile | null>(profileKey(userId), null);
+  return raw ? normalizeProfile(raw) : null;
 }
 
 export function saveProfile(profile: UserProfile) {
-  writeJson(profileKey(profile.userId), profile);
+  writeJson(profileKey(profile.userId), normalizeProfile(profile));
 }
 
 export function timerKey(userId: string) {
   return `studeo:timer:${userId}`;
 }
 
+export function timerRuntimeKey(userId: string) {
+  return `studeo:timer-runtime:${userId}`;
+}
+
+/** @deprecated */
 export function getTimerState(userId: string): TimerState | null {
   return readJson<TimerState | null>(timerKey(userId), null);
 }
 
+export function getTimerRuntime(userId: string): TimerRuntimeState | null {
+  const runtime = readJson<TimerRuntimeState | null>(timerRuntimeKey(userId), null);
+  if (runtime) return runtime;
+
+  const legacy = getTimerState(userId);
+  if (!legacy) return null;
+
+  return {
+    activeTimerId: null,
+    running: legacy.running,
+    startedAt: legacy.startedAt,
+  };
+}
+
+/** @deprecated */
 export function saveTimerState(userId: string, state: TimerState | null) {
   if (!state) {
     localStorage.removeItem(timerKey(userId));
     return;
   }
   writeJson(timerKey(userId), state);
+}
+
+export function saveTimerRuntime(userId: string, state: TimerRuntimeState | null) {
+  if (!state) {
+    localStorage.removeItem(timerRuntimeKey(userId));
+    localStorage.removeItem(timerKey(userId));
+    return;
+  }
+  writeJson(timerRuntimeKey(userId), state);
 }
 
 export function ensureDemoUser(): UserRecord {

@@ -46,6 +46,28 @@
   margin-top: 0.5rem;
 }
 
+.presentation-audit-link {
+  display: block;
+  margin-top: 0.45rem;
+  padding-left: 0.15rem;
+  font-size: 0.68rem;
+  color: var(--color-text-muted);
+  opacity: 0.55;
+  text-decoration: none;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+.presentation-audit-link:hover {
+  opacity: 0.85;
+  text-decoration: underline;
+}
+
+.more-sheet__theme .presentation-audit-link {
+  margin-top: 0.65rem;
+  padding-left: 0.25rem;
+}
+
 .auth-card__theme {
   margin-top: 1.25rem;
   padding-top: 1rem;
@@ -181,13 +203,19 @@
   display: grid;
   place-items: center;
   padding: 1.5rem;
+  pointer-events: none;
 }
 
 .level-up-overlay__backdrop {
   position: absolute;
   inset: 0;
-  background: rgba(15, 23, 42, 0.55);
+  border: none;
+  padding: 0;
+  margin: 0;
+  background: rgba(15, 23, 42, 0.45);
   animation: fade-in 0.3s ease;
+  cursor: pointer;
+  pointer-events: auto;
 }
 
 .level-up-overlay__card {
@@ -200,6 +228,7 @@
   width: 100%;
   box-shadow: 0 24px 64px rgba(0, 0, 0, 0.25);
   animation: level-card-pop 0.5s var(--ease-spring);
+  pointer-events: auto;
 }
 
 .level-up-overlay__lottie {
@@ -231,6 +260,10 @@
   margin: 0.5rem 0 0;
   color: var(--color-text-muted);
   font-size: 0.9rem;
+}
+
+.level-up-overlay__close {
+  margin-top: 1.25rem;
 }
 
 @keyframes level-card-pop {
