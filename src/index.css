@@ -1026,30 +1026,69 @@ select {
 
 .task-item {
   display: flex;
-  align-items: center;
-  gap: 0.75rem;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.65rem 0.75rem;
   background: var(--color-task-bg);
-  padding: 0.85rem 1rem;
-  border-radius: var(--radius-sm);
-  margin-bottom: 0.65rem;
+  border: 1px solid var(--color-task-border, var(--color-surface-alt));
+  padding: 0.75rem 0.85rem;
+  border-radius: var(--radius-md);
+  margin-bottom: 0.55rem;
+  min-width: 0;
+  transition:
+    border-color var(--duration-hover),
+    box-shadow var(--duration-hover);
+}
+
+.task-item:hover {
+  border-color: var(--color-primary-light);
+  box-shadow: var(--shadow-card);
 }
 
 .task-item--done {
-  opacity: 0.55;
+  opacity: 0.65;
 }
 
 .task-item--done .task-item__label {
   text-decoration: line-through;
+  color: var(--color-text-muted);
+}
+
+.task-item__main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+}
+
+.task-item__main input[type='checkbox'] {
+  flex-shrink: 0;
+  margin-top: 0.15rem;
+  width: 1rem;
+  height: 1rem;
+  accent-color: var(--color-primary-mid);
 }
 
 .task-item__label {
   flex: 1;
+  min-width: 0;
   border: none;
   background: none;
   text-align: left;
   cursor: pointer;
   font: inherit;
   padding: 0;
+  line-height: 1.45;
+  color: var(--color-text);
+  word-break: break-word;
+}
+
+.task-item__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-shrink: 0;
 }
 
 .task-item__study {
@@ -1061,26 +1100,35 @@ select {
   border-radius: 50%;
   cursor: pointer;
   font-size: 0.65rem;
-  transition: transform var(--duration-hover);
+  flex-shrink: 0;
+  transition: transform var(--duration-hover), background var(--duration-hover);
 }
 
 .task-item__study:hover {
   transform: scale(1.08);
+  background: var(--color-primary-mid);
+  color: var(--color-text-on-primary);
 }
 
 .badge {
-  margin-left: auto;
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   font-weight: 700;
   text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.22rem 0.55rem;
+  border-radius: 999px;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .badge--alta {
+  background: var(--color-error-soft);
   color: var(--color-error);
 }
 
 .badge--media {
-  color: #d68910;
+  background: var(--color-primary-light);
+  color: var(--color-primary-mid);
 }
 
 /* Profile */
@@ -1420,6 +1468,7 @@ select {
 
 .chip {
   background: var(--color-task-bg);
+  border: 1px solid var(--color-task-border, var(--color-surface-alt));
   padding: 0.65rem 1rem;
   border-radius: var(--radius-sm);
 }

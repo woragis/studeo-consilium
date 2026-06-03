@@ -33,7 +33,8 @@
   --color-subject-portugues: #fb923c;
 
   --color-lesson-thumb: linear-gradient(135deg, #065f46 0%, #047857 50%, #10b981 100%);
-  --color-task-bg: #422006;
+  --color-task-bg: #1e293b;
+  --color-task-border: #334155;
 
   --gradient-header: linear-gradient(135deg, #082f49 0%, #0e7490 100%);
   --gradient-auth-bg: linear-gradient(160deg, #0f172a 0%, #1e293b 50%, #422006 100%);
@@ -80,4 +81,28 @@
 [data-theme='dark'] .audit-card__number {
   background: var(--color-primary-light);
   color: var(--color-text-on-primary);
+}
+
+[data-theme='dark'] .task-item:hover {
+  border-color: #475569;
+}
+
+[data-theme='dark'] .badge--media {
+  background: #164e63;
+  color: #7dd3fc;
+}
+
+[data-theme='dark'] .badge--alta {
+  background: #450a0a;
+  color: #fca5a5;
+}
+
+[data-theme='dark'] .task-item__study {
+  background: #164e63;
+  color: #7dd3fc;
+}
+
+[data-theme='dark'] .task-item__study:hover {
+  background: #0369a1;
+  color: #f8fafc;
 }

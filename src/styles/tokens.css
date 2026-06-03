@@ -35,7 +35,8 @@
   --color-subject-portugues: #ea580c;
 
   --color-lesson-thumb: linear-gradient(135deg, #a7f3d0 0%, #6ee7b7 50%, #34d399 100%);
-  --color-task-bg: var(--color-accent-soft);
+  --color-task-bg: var(--color-card);
+  --color-task-border: var(--color-surface-alt);
   --color-goals-highlight: var(--color-accent);
 
   --gradient-header: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-mid) 100%);

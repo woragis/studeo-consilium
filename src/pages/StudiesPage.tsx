@@ -351,36 +351,41 @@ export function StudiesPage() {
                 key={task.id}
                 className={`task-item stagger-item ${task.done ? 'task-item--done' : ''}`}
               >
-                <input
-                  type="checkbox"
-                  checked={task.done}
-                  onChange={() => toggleTask(task.id)}
-                  aria-label={task.title}
-                />
-                <button
-                  type="button"
-                  className="task-item__label"
-                  onClick={() => toggleTask(task.id)}
-                >
-                  {task.title}
-                </button>
-                <button
-                  type="button"
-                  className="task-item__study"
-                  onClick={() => handleTaskStudy(task.id, task.subjectId)}
-                  title="Usar cronômetro desta tarefa"
-                >
-                  ▶
-                </button>
-                <PriorityBadge priority={task.priority} />
-                <button
-                  type="button"
-                  className="task-item__delete"
-                  onClick={() => setPendingDelete({ id: task.id, title: task.title })}
-                  aria-label={`Excluir tarefa ${task.title}`}
-                >
-                  ×
-                </button>
+                <div className="task-item__main">
+                  <input
+                    type="checkbox"
+                    checked={task.done}
+                    onChange={() => toggleTask(task.id)}
+                    aria-label={task.title}
+                  />
+                  <button
+                    type="button"
+                    className="task-item__label"
+                    onClick={() => toggleTask(task.id)}
+                  >
+                    {task.title}
+                  </button>
+                </div>
+                <div className="task-item__actions">
+                  <button
+                    type="button"
+                    className="task-item__study"
+                    onClick={() => handleTaskStudy(task.id, task.subjectId)}
+                    title="Usar cronômetro desta tarefa"
+                    aria-label={`Estudar: ${task.title}`}
+                  >
+                    ▶
+                  </button>
+                  <PriorityBadge priority={task.priority} />
+                  <button
+                    type="button"
+                    className="task-item__delete"
+                    onClick={() => setPendingDelete({ id: task.id, title: task.title })}
+                    aria-label={`Excluir tarefa ${task.title}`}
+                  >
+                    ×
+                  </button>
+                </div>
               </li>
             ))}
           </ul>
