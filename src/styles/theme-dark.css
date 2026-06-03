@@ -63,7 +63,17 @@
   color: var(--color-text);
 }
 
-[data-theme='dark'] .filter-chips__active {
+[data-theme='dark'] .filter-chips button.filter-chips__active {
   background: var(--color-primary-mid);
   border-color: var(--color-primary-mid);
+  color: #0f172a;
+}
+
+[data-theme='dark'] .audit-card {
+  border-color: var(--color-surface-alt);
+}
+
+[data-theme='dark'] .audit-card__number {
+  background: var(--color-primary-light);
+  color: var(--color-text-on-primary);
 }

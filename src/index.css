@@ -853,17 +853,30 @@ select {
 }
 
 .filter-chips button {
-  border: 1px solid #d0d8e0;
-  background: #fff;
+  border: 1px solid var(--color-surface-alt);
+  background: var(--color-card);
+  color: var(--color-text);
   padding: 0.4rem 0.9rem;
   border-radius: 999px;
   cursor: pointer;
+  font-weight: 500;
+  transition:
+    background var(--duration-hover),
+    color var(--duration-hover),
+    border-color var(--duration-hover),
+    transform var(--duration-hover);
 }
 
-.filter-chips__active {
+.filter-chips button:hover:not(.filter-chips__active) {
+  transform: translateY(-1px);
+  border-color: var(--color-primary-mid);
+}
+
+.filter-chips button.filter-chips__active {
   background: var(--color-primary);
-  color: #fff;
+  color: var(--color-text-on-primary);
   border-color: var(--color-primary);
+  font-weight: 600;
 }
 
 .lessons-grid {
@@ -915,17 +928,6 @@ select {
 
 .clickable-card:hover .lesson-card__arrow {
   transform: translateX(4px);
-}
-
-.filter-chips button {
-  transition:
-    background var(--duration-hover),
-    color var(--duration-hover),
-    transform var(--duration-hover);
-}
-
-.filter-chips button:hover:not(.filter-chips__active) {
-  transform: translateY(-1px);
 }
 
 .lesson-detail__video {
@@ -1022,7 +1024,92 @@ select {
   gap: 0.75rem;
 }
 
-.audit-grid,
+.audit-page__banner {
+  background: var(--gradient-header);
+  color: var(--color-text-on-primary);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem 1.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.audit-page__banner h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.35rem;
+}
+
+.audit-page__banner p {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  opacity: 0.95;
+}
+
+.audit-page__banner strong {
+  font-weight: 700;
+}
+
+.audit-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.audit-card {
+  background: var(--color-card);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  padding: 1.15rem 1.25rem;
+  border: 1px solid transparent;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.audit-card__number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  font-size: 0.8rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.audit-card__title {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.35;
+  color: var(--color-primary);
+}
+
+.audit-card__label {
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.audit-card__screens {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  line-height: 1.4;
+}
+
+.audit-card__evidence {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--color-text);
+}
+
+.audit-page__footer {
+  margin-top: 1.5rem;
+  text-align: center;
+}
+
 .help-grid,
 .goals-page__grid {
   display: grid;
@@ -1074,33 +1161,6 @@ select {
   background: var(--color-primary);
 }
 
-.audit-card--open {
-  border-left: 3px solid var(--color-accent);
-}
-
-.audit-card__trigger {
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 0.75rem;
-  border: none;
-  background: none;
-  padding: 0;
-  font: inherit;
-  font-weight: 600;
-  color: var(--color-primary);
-  cursor: pointer;
-  text-align: left;
-}
-
-.audit-card__body {
-  margin-top: 0.75rem;
-  padding-top: 0.75rem;
-  border-top: 1px solid var(--color-surface-alt);
-  color: var(--color-text-muted);
-}
-
 .level-badge {
   display: inline-flex;
   align-items: center;
@@ -1114,6 +1174,10 @@ select {
 }
 
 @media (max-width: 900px) {
+  .audit-grid {
+    grid-template-columns: 1fr;
+  }
+
   .home-page__grid,
   .studies-page__grid,
   .profile-page__grid {
