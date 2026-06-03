@@ -13,6 +13,7 @@ import {
   goalDuplicatePools,
 } from '../lib/strings';
 import { showToast } from '../lib/toast';
+import { addXp, levelFromXp } from '../lib/xp';
 import type { DailyGoalStatus } from '../types';
 
 type PendingDelete =
@@ -29,6 +30,9 @@ export function GoalsPage() {
   const [editingLongTermId, setEditingLongTermId] = useState<string | null>(null);
   const [editLongTermTitle, setEditLongTermTitle] = useState('');
   const [popLongTermId, setPopLongTermId] = useState<string | null>(null);
+  const [popDailyId, setPopDailyId] = useState<string | null>(null);
+  const [editingDailyId, setEditingDailyId] = useState<string | null>(null);
+  const [editDailyTitle, setEditDailyTitle] = useState('');
   const { schedule, isHidden } = useDeferredDelete();
 
   if (!profile) return null;
@@ -110,6 +114,80 @@ export function GoalsPage() {
     showToast('Meta do dia adicionada.', 'success');
   }
 
+  function toggleDailyGoal(id: string) {
+    if (!profile) return;
+    setPopDailyId(id);
+    setTimeout(() => setPopDailyId(null), 350);
+
+    let awardedXp = false;
+    const dailyGoals = profile.dailyGoals.map((g) => {
+      if (g.id !== id) return g;
+      const nextStatus: DailyGoalStatus =
+        g.status === 'pendente'
+          ? 'em_andamento'
+          : g.status === 'em_andamento'
+            ? 'concluida'
+            : 'pendente';
+      if (nextStatus === 'concluida' && g.status !== 'concluida') {
+        awardedXp = true;
+      }
+      return { ...g, status: nextStatus };
+    });
+
+    if (awardedXp) {
+      const xp = addXp(profile.xp, 5);
+      updateProfile({ dailyGoals, xp, level: levelFromXp(xp) });
+      showToast('Meta do dia concluída! +5 XP', 'success');
+    } else {
+      updateProfile({ dailyGoals });
+      const goal = dailyGoals.find((g) => g.id === id);
+      if (goal?.status === 'em_andamento') {
+        showToast('Meta em andamento — continue assim!', 'info');
+      }
+    }
+  }
+
+  function startEditDaily(id: string, title: string) {
+    setEditingDailyId(id);
+    setEditDailyTitle(title);
+  }
+
+  function cancelEditDaily() {
+    setEditingDailyId(null);
+    setEditDailyTitle('');
+  }
+
+  function saveEditDaily(e: FormEvent) {
+    e.preventDefault();
+    if (!profile || !editingDailyId || !editDailyTitle.trim()) return;
+
+    const currentGoal = profile.dailyGoals.find((g) => g.id === editingDailyId);
+    if (!currentGoal) return;
+
+    const trimmed = editDailyTitle.trim();
+    if (trimmed === currentGoal.title) {
+      cancelEditDaily();
+      return;
+    }
+
+    const duplicate = findDuplicateKind(trimmed, goalDuplicatePools({
+      ...profile,
+      dailyGoals: profile.dailyGoals.filter((g) => g.id !== editingDailyId),
+    }));
+    if (duplicate) {
+      showToast(duplicateBlockedMessage(trimmed, duplicate, 'meta do dia'), 'error');
+      return;
+    }
+
+    updateProfile({
+      dailyGoals: profile.dailyGoals.map((g) =>
+        g.id === editingDailyId ? { ...g, title: trimmed } : g,
+      ),
+    });
+    cancelEditDaily();
+    showToast('Meta atualizada.', 'success');
+  }
+
   function toggleLongTermGoal(id: string) {
     if (!profile) return;
     setPopLongTermId(id);
@@ -186,23 +264,59 @@ export function GoalsPage() {
       <div className="goals-page__grid">
         <Card title="Metas de hoje">
           <ul className="goal-list">
-            {visibleDailyGoals.map((g) => (
-              <li key={g.id} className="goal-list__item">
-                <GoalStatusIcon status={g.status} />
-                <span className="goal-list__content">
-                  <span>{g.title}</span>
-                  <small className={`goal-list__status goal-list__status--${g.status}`}>
-                    {goalStatusLabel(g.status)}
-                  </small>
-                </span>
-                <button
-                  type="button"
-                  className="goal-list__remove"
-                  onClick={() => setPendingDelete({ type: 'daily', id: g.id, label: g.title })}
-                  aria-label={`Remover meta ${g.title}`}
-                >
-                  ×
-                </button>
+            {visibleDailyGoals.map((goal) => (
+              <li key={goal.id} className="goal-list__item">
+                {editingDailyId === goal.id ? (
+                  <form className="goal-list__edit-form" onSubmit={saveEditDaily}>
+                    <Input
+                      label="Editar meta"
+                      value={editDailyTitle}
+                      onChange={(e) => setEditDailyTitle(e.target.value)}
+                      autoFocus
+                    />
+                    <div className="goal-list__edit-actions">
+                      <Button type="submit" variant="accent" className="btn--inline">
+                        Salvar
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        className="btn--inline"
+                        onClick={cancelEditDaily}
+                      >
+                        Cancelar
+                      </Button>
+                    </div>
+                  </form>
+                ) : (
+                  <>
+                    <button
+                      type="button"
+                      className="goal-status-btn"
+                      onClick={() => toggleDailyGoal(goal.id)}
+                      aria-label={`Alternar meta: ${goal.title} (${goalStatusLabel(goal.status)})`}
+                    >
+                      <GoalStatusIcon status={goal.status} pop={popDailyId === goal.id} />
+                    </button>
+                    <button
+                      type="button"
+                      className="goal-list__content"
+                      onClick={() => toggleDailyGoal(goal.id)}
+                    >
+                      <span>{goal.title}</span>
+                      <small className={`goal-list__status goal-list__status--${goal.status}`}>
+                        {goalStatusLabel(goal.status)}
+                      </small>
+                    </button>
+                    <GoalActionsMenu
+                      goalTitle={goal.title}
+                      onEdit={() => startEditDaily(goal.id, goal.title)}
+                      onDelete={() =>
+                        setPendingDelete({ type: 'daily', id: goal.id, label: goal.title })
+                      }
+                    />
+                  </>
+                )}
               </li>
             ))}
           </ul>
