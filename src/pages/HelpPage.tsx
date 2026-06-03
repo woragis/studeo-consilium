@@ -23,7 +23,7 @@ const faq = [
   },
   {
     q: 'Onde vejo as heurísticas de UX?',
-    a: 'A tela Auditoria UX documenta o redesign com base em Nielsen — ideal para a apresentação da disciplina.',
+    a: 'As 10 heurísticas oficiais de Nielsen estão na tela Auditoria UX, com telas e evidências do protótipo.',
     link: '/auditoria-ux',
     linkLabel: 'Abrir auditoria',
   },

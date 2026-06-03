@@ -86,6 +86,10 @@ export interface Lesson {
 }
 
 export interface HeuristicItem {
+  number: number;
   title: string;
-  examples: string;
+  /** Onde isso aparece no protótipo */
+  screens: string;
+  /** Evidência concreta na interface */
+  evidence: string;
 }
