@@ -24,9 +24,11 @@ import { formatDuration } from '../lib/storage';
 
 import { TIMER_TYPE_LABELS, timerSubtitle } from '../lib/study-timers';
 
-import { xpProgressInLevel } from '../lib/xp';
+import { xpProgressInLevel, addXp, levelFromXp } from '../lib/xp';
 
 import { showToast } from '../lib/toast';
+
+import type { DailyGoalStatus } from '../types';
 
 
 
@@ -37,6 +39,10 @@ export function ProfilePage() {
   const [editOpen, setEditOpen] = useState(false);
 
   const [saving, setSaving] = useState(false);
+
+  const [popDailyId, setPopDailyId] = useState<string | null>(null);
+
+  const [popLongTermId, setPopLongTermId] = useState<string | null>(null);
 
 
 
@@ -91,6 +97,122 @@ export function ProfilePage() {
     setEditOpen(false);
 
     showToast('Alterações salvas com sucesso.', 'success');
+
+  }
+
+
+
+  function toggleDailyGoal(id: string) {
+
+    if (!profile) return;
+
+    setPopDailyId(id);
+
+    setTimeout(() => setPopDailyId(null), 350);
+
+
+
+    let awardedXp = false;
+
+    const dailyGoals = profile.dailyGoals.map((g) => {
+
+      if (g.id !== id) return g;
+
+      const nextStatus: DailyGoalStatus =
+
+        g.status === 'pendente'
+
+          ? 'em_andamento'
+
+          : g.status === 'em_andamento'
+
+            ? 'concluida'
+
+            : 'pendente';
+
+      if (nextStatus === 'concluida' && g.status !== 'concluida') {
+
+        awardedXp = true;
+
+      }
+
+      return { ...g, status: nextStatus };
+
+    });
+
+
+
+    if (awardedXp) {
+
+      const xp = addXp(profile.xp, 5);
+
+      updateProfile({ dailyGoals, xp, level: levelFromXp(xp) });
+
+      showToast('Meta do dia concluída! +5 XP', 'success');
+
+    } else {
+
+      updateProfile({ dailyGoals });
+
+      const goal = dailyGoals.find((g) => g.id === id);
+
+      if (goal?.status === 'em_andamento') {
+
+        showToast('Meta em andamento — continue assim!', 'info');
+
+      }
+
+    }
+
+  }
+
+
+
+  function toggleLongTermGoal(id: string) {
+
+    if (!profile) return;
+
+    setPopLongTermId(id);
+
+    setTimeout(() => setPopLongTermId(null), 350);
+
+
+
+    const longTermGoals = profile.longTermGoals.map((g) => {
+
+      if (g.id !== id) return g;
+
+      const nextStatus: DailyGoalStatus =
+
+        g.status === 'pendente'
+
+          ? 'em_andamento'
+
+          : g.status === 'em_andamento'
+
+            ? 'concluida'
+
+            : 'pendente';
+
+      return { ...g, status: nextStatus };
+
+    });
+
+
+
+    updateProfile({ longTermGoals });
+
+    const goal = longTermGoals.find((g) => g.id === id);
+
+    if (goal?.status === 'em_andamento') {
+
+      showToast('Meta em andamento — continue assim!', 'info');
+
+    } else if (goal?.status === 'concluida') {
+
+      showToast('Meta de longo prazo concluída!', 'success');
+
+    }
 
   }
 
@@ -220,9 +342,41 @@ export function ProfilePage() {
 
                 <li key={g.id} className="goal-list__item">
 
-                  <GoalStatusIcon status="concluida" />
+                  <button
 
-                  <span className="goal-list__content">{g.title}</span>
+                    type="button"
+
+                    className="goal-status-btn"
+
+                    onClick={() => toggleDailyGoal(g.id)}
+
+                    aria-label={`Alternar meta: ${g.title} (${goalStatusLabel(g.status)})`}
+
+                  >
+
+                    <GoalStatusIcon status={g.status} pop={popDailyId === g.id} />
+
+                  </button>
+
+                  <button
+
+                    type="button"
+
+                    className="goal-list__content"
+
+                    onClick={() => toggleDailyGoal(g.id)}
+
+                  >
+
+                    <span>{g.title}</span>
+
+                    <small className={`goal-list__status goal-list__status--${g.status}`}>
+
+                      {goalStatusLabel(g.status)}
+
+                    </small>
+
+                  </button>
 
                 </li>
 
@@ -274,9 +428,31 @@ export function ProfilePage() {
 
                 <li key={g.id} className="goal-list__item">
 
-                  <GoalStatusIcon status={g.status} />
+                  <button
 
-                  <span className="goal-list__content">
+                    type="button"
+
+                    className="goal-status-btn"
+
+                    onClick={() => toggleLongTermGoal(g.id)}
+
+                    aria-label={`Alternar meta: ${g.title} (${goalStatusLabel(g.status)})`}
+
+                  >
+
+                    <GoalStatusIcon status={g.status} pop={popLongTermId === g.id} />
+
+                  </button>
+
+                  <button
+
+                    type="button"
+
+                    className="goal-list__content"
+
+                    onClick={() => toggleLongTermGoal(g.id)}
+
+                  >
 
                     <span>{g.title}</span>
 
@@ -286,7 +462,7 @@ export function ProfilePage() {
 
                     </small>
 
-                  </span>
+                  </button>
 
                 </li>
 

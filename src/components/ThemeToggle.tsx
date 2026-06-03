@@ -1,10 +1,10 @@
-import { Monitor, Moon, Sun } from 'lucide-react';
+import { Moon, Sun, SunMoon } from 'lucide-react';
 import { useTheme, type ThemeMode } from '../context/ThemeContext';
 
 const options: { mode: ThemeMode; label: string; icon: typeof Sun }[] = [
   { mode: 'light', label: 'Claro', icon: Sun },
   { mode: 'dark', label: 'Escuro', icon: Moon },
-  { mode: 'system', label: 'Sistema', icon: Monitor },
+  { mode: 'system', label: 'Automático', icon: SunMoon },
 ];
 
 export function ThemeToggle({ compact = false }: { compact?: boolean }) {

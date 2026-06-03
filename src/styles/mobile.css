@@ -13,12 +13,67 @@
     display: none !important;
   }
 
-  .lesson-trail {
-    display: none;
-  }
-
   .app-shell__body {
     min-height: 0;
+    width: 100%;
+  }
+
+  .app-shell__content {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: clip;
+    padding-top: 1rem;
+    padding-bottom: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom, 0) + 1rem);
+    padding-left: max(1rem, env(safe-area-inset-left, 0px));
+    padding-right: max(1rem, env(safe-area-inset-right, 0px));
+  }
+
+  .page-transition,
+  .page {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .studies-page__grid,
+  .profile-page__grid,
+  .goals-page__grid,
+  .home-page__grid {
+    grid-template-columns: 1fr;
+    min-width: 0;
+  }
+
+  .studies-page__grid > *,
+  .profile-page__grid > *,
+  .goals-page__grid > *,
+  .home-page__grid > * {
+    min-width: 0;
+  }
+
+  .card {
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .profile-hero {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .profile-hero__main {
+    width: 100%;
+  }
+
+  .profile-hero__head {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .profile-hero__meta {
+    justify-content: center;
   }
 
   .mobile-nav {
@@ -75,27 +130,31 @@
     animation: nav-indicator-in 0.35s var(--ease-spring);
   }
 
-  .app-shell__content {
-    padding: 1rem 1rem calc(var(--bottom-nav-height) + env(safe-area-inset-bottom, 0) + 1rem);
+  .app-header {
+    padding-left: max(1rem, env(safe-area-inset-left, 0px));
+    padding-right: max(1rem, env(safe-area-inset-right, 0px));
+    grid-template-columns: 1fr;
+    justify-items: center;
   }
 
-  .app-header {
-    padding: 0 1rem;
-    grid-template-columns: 1fr auto;
+  .app-header__section {
+    grid-column: 1;
+    justify-self: center;
+    font-size: 1rem;
+    font-weight: 600;
+    text-align: center;
   }
 
   .app-header__brand {
-    font-size: 0.8rem;
-    justify-self: end;
+    display: none;
   }
 
   .app-header__profile {
     display: none;
   }
 
-  .app-header__section {
-    font-size: 1rem;
-    font-weight: 600;
+  .lesson-trail {
+    display: none;
   }
 
   .toast {
